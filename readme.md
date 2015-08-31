@@ -12,11 +12,9 @@ If context is not provided, document is used instead
 ### Refining selection
 ```
 Sel(…).find({string} selector);
-Sel().find({string} selector, {array, default=null} elements);
 ```
 
 You can refine your current selection using find prototype with a CSS selector.
-You can pass an array of elements to the function if you want to search in it.
 
 ## Loops
 ```
