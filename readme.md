@@ -102,24 +102,24 @@ Examples of usage:
 ## Classes
 ### hasClass
 ```
-    $('.div').hasClass('className');
+    Sel('.div').hasClass('className');
 ```
 Will return you if the *first* element matching the selector has the Class
 
 ### addClass
 ```
-    $('.div').addClass('className');
+    Sel('.div').addClass('className');
 ```
 Set class for all elements selected
 
 ### removeClass
 ```
-    $('.div').removeClass('className');
+    Sel('.div').removeClass('className');
 ```
 Remove class for all elements selected
 
 ### removeClass
 ```
-    $('.div').removeClass('className');
+    Sel('.div').removeClass('className');
 ```
 Remove class for all elements selected
