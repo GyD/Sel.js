@@ -9,6 +9,50 @@ var Poivre = (function () {
 
     /**
      *
+     * Compatibility: IE9+ (not tested IE8)
+     * Source: jQuery 2
+     *
+     * @param obj
+     * @returns {boolean}
+     */
+    var isArraylike = function (obj) {
+
+        // Support: iOS 8.2 (not reproducible in simulator)
+        // `in` check used to prevent JIT error (gh-2145)
+        // hasOwn isn't used here due to false negatives
+        // regarding Nodelist length in IE
+        var length = "length" in obj && obj.length,
+            type = typeof obj;
+
+        if (type === "function" || (obj != null && obj === obj.window)) {
+            return false;
+        }
+
+        if (obj.nodeType === 1 && length) {
+            return true;
+        }
+
+        return type === "array" || length === 0 ||
+            typeof length === "number" && length > 0 && ( length - 1 ) in obj;
+    };
+
+    /**
+     *
+     * @param data
+     * @returns {string}
+     */
+    var param = function (data) {
+        var string = [];
+
+        Poivre.each(data, function (index) {
+            string.push(encodeURIComponent(index) + "=" + encodeURIComponent(this));
+        });
+
+        return string.join("&").replace(/%20/g, "+");
+    };
+
+    /**
+     *
      * @param selector
      * @param context
      * @returns {Poivre}
@@ -18,7 +62,7 @@ var Poivre = (function () {
         if (!selector) {
             return this;
         }
-        if (Poivre.type(selector) == "object") {
+        if (typeof selector == "object") {
             return this.pushStack([selector]);
         }
 
@@ -53,6 +97,7 @@ var Poivre = (function () {
             if (attribute == false && typeof element[key] == 'object') {
                 return element[key];
             }
+
             return element.getAttribute(key);
         },
 
@@ -99,7 +144,7 @@ var Poivre = (function () {
         find: function (selector, elements) {
             var elements = elements || this, results = [];
 
-            if (!Poivre.isArraylike(elements)) {
+            if (!isArraylike(elements)) {
                 elements = [elements];
             }
 
@@ -137,45 +182,33 @@ var Poivre = (function () {
 
         /**
          *
-         * Compatibility: IE8+
+         * Compatibility: IE10+
          *
          * @param className
          * @returns {Poivre}
          */
         addClass: function (className) {
             return this.each(function () {
-                var classList = this.classList;
-                if (classList) {
-                    classList.add(className);
-                } else {
-                    this.className += ' ' + className;
-                }
+                this.classList.add(className);
             });
         },
 
         /**
          *
-         * Compatibility: IE8+
+         * Compatibility: IE10+
          *
          * @param className
          * @returns {Poivre}
          */
         removeClass: function (className) {
             return this.each(function () {
-                var classList = this.classList;
-                var oldclassName = this.className;
-
-                if (classList) {
-                    classList.remove(className);
-                } else {
-                    oldclassName = oldclassName.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
-                }
+                this.classList.remove(className);
             });
         },
 
         /**
          *
-         * Compatibility: IE8+
+         * Compatibility: IE10+
          *
          * @param className
          * @returns {boolean}
@@ -185,30 +218,10 @@ var Poivre = (function () {
 
             if (!element) {
                 return undefined;
-            }
-
-            if (element.classList) {
+            }else{
                 return element.classList.contains(className);
-            } else {
-                return new RegExp('(^| )' + className + '( |$)', 'gi').test(element.className);
             }
         },
-    };
-
-
-    /**
-     *
-     * @param data
-     * @returns {string}
-     */
-    Poivre.param = function (data) {
-        var string = [];
-
-        Poivre.each(data, function (index) {
-            string.push(encodeURIComponent(index) + "=" + encodeURIComponent(this));
-        });
-
-        return string.join("&").replace(/%20/g, "+");
     };
 
     /**
@@ -231,7 +244,7 @@ var Poivre = (function () {
      */
     Poivre.ajax = function (url, options) {
 
-        if (Poivre.type(url) === "object") {
+        if (typeof url === "object") {
             options = url;
             url = options.url;
         }
@@ -275,7 +288,7 @@ var Poivre = (function () {
         };
 
         if (null != data && typeof data != 'string') {
-            data = Poivre.param(data);
+            data = param(data);
         }
 
         request.send(data);
@@ -297,7 +310,7 @@ var Poivre = (function () {
         var value,
             i = 0,
             length = obj.length,
-            isArray = Poivre.isArraylike(obj);
+            isArray = isArraylike(obj);
 
         if (args) {
             if (isArray) {
@@ -340,67 +353,6 @@ var Poivre = (function () {
         }
 
         return obj;
-    };
-
-    /**
-     *
-     * Compatibility: IE9+ (not tested IE8)
-     * Source: jQuery 2
-     *
-     * @param object
-     * @returns {*}
-     */
-    Poivre.type = function (object) {
-        if (object == null) {
-            return object + "";
-        }
-        // Support: Android<4.0, iOS<6 (functionish RegExp)
-        if (typeof object === "object" || typeof object === "function") {
-            return {}[toString.call(object)] || "object";
-        } else {
-            return typeof object;
-        }
-    };
-
-    /**
-     *
-     * Compatibility: IE9+ (not tested IE8)
-     * Source: jQuery 2
-     *
-     * @param obj
-     * @returns {boolean}
-     */
-    Poivre.isWindow = function (obj) {
-        return obj != null && obj === obj.window;
-    };
-
-    /**
-     *
-     * Compatibility: IE9+ (not tested IE8)
-     * Source: jQuery 2
-     *
-     * @param obj
-     * @returns {boolean}
-     */
-    Poivre.isArraylike = function (obj) {
-
-        // Support: iOS 8.2 (not reproducible in simulator)
-        // `in` check used to prevent JIT error (gh-2145)
-        // hasOwn isn't used here due to false negatives
-        // regarding Nodelist length in IE
-        var length = "length" in obj && obj.length,
-            type = Poivre.type(obj);
-
-        if (type === "function" || Poivre.isWindow(obj)) {
-            return false;
-        }
-
-        if (obj.nodeType === 1 && length) {
-            return true;
-        }
-
-        return type === "array" || length === 0 ||
-            typeof length === "number" && length > 0 && ( length - 1 ) in obj;
     };
 
     /**

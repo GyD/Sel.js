@@ -58,6 +58,6 @@ Poivre.each({
         });
     }
 
-}, function(i){
-    Poivre.prototype[i] = this;
+}, function(position, callback){
+    Poivre.prototype[position] = callback;
 });
