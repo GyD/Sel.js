@@ -218,10 +218,34 @@ var Poivre = (function () {
 
             if (!element) {
                 return undefined;
-            }else{
+            } else {
                 return element.classList.contains(className);
             }
         },
+
+        prepend: function (elements) {
+            if (!isArraylike(elements)) {
+                elements = [elements];
+            }
+
+            return Poivre.each(this, function (i, parent) {
+                Poivre.each(elements, function (k, element) {
+                    parent.insertBefore(element, parent.firstChild);
+                });
+            });
+        },
+
+        append: function (elements) {
+            if (!isArraylike(elements)) {
+                elements = [elements];
+            }
+
+            return Poivre.each(this, function (i, parent) {
+                Poivre.each(elements, function (k, appendElement) {
+                    parent.appendChild(appendElement);
+                });
+            });
+        }
     };
 
     /**
