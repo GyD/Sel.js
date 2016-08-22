@@ -15,7 +15,7 @@ var Poivre = (function () {
      * @param obj
      * @returns {boolean}
      */
-    var isArraylike = function (obj) {
+    var isArrayLike = function (obj) {
 
         // Support: real iOS 8.2 only (not reproducible in simulator)
         // `in` check used to prevent JIT error (gh-2145)
@@ -147,7 +147,7 @@ var Poivre = (function () {
             var elements = elements || this,
                 results = [];
 
-            if (!isArraylike(elements)) {
+            if (!isArrayLike(elements)) {
                 elements = [elements];
             }
 
@@ -234,7 +234,7 @@ var Poivre = (function () {
          * @returns {*}
          */
         prepend: function (elements) {
-            if (!isArraylike(elements)) {
+            if (!isArrayLike(elements)) {
                 elements = [elements];
             }
 
@@ -252,7 +252,7 @@ var Poivre = (function () {
          * @returns {*}
          */
         append: function (elements) {
-            if (!isArraylike(elements)) {
+            if (!isArrayLike(elements)) {
                 elements = [elements];
             }
 
@@ -292,12 +292,12 @@ var Poivre = (function () {
         options = options || {};
         // if method is not defined, use GET method
         var method = options.method || 'GET',
-            // async is enablde by default
+        // async is enablde by default
             async = options.async || true,
-            // data are null by default
+        // data are null by default
             data = options.data || null,
 
-            // create the request
+        // create the request
             request = new XMLHttpRequest();
 
         // open the request
