@@ -17,19 +17,15 @@ var Poivre = (function () {
      */
     var isArraylike = function (obj) {
 
-        // Support: iOS 8.2 (not reproducible in simulator)
+        // Support: real iOS 8.2 only (not reproducible in simulator)
         // `in` check used to prevent JIT error (gh-2145)
         // hasOwn isn't used here due to false negatives
         // regarding Nodelist length in IE
-        var length = "length" in obj && obj.length,
+        var length = !!obj && "length" in obj && obj.length,
             type = typeof obj;
 
         if (type === "function" || (obj != null && obj === obj.window)) {
             return false;
-        }
-
-        if (obj.nodeType === 1 && length) {
-            return true;
         }
 
         return type === "array" || length === 0 ||
@@ -62,6 +58,7 @@ var Poivre = (function () {
         if (!selector) {
             return this;
         }
+
         if (typeof selector == "object") {
             return this.pushStack([selector]);
         }
@@ -94,7 +91,7 @@ var Poivre = (function () {
                 return null;
             }
 
-            if (attribute == false && typeof element[key] == 'object') {
+            if (typeof element[key] == 'string' || typeof element[key] == 'object' || attribute == false) {
                 return element[key];
             }
 
@@ -108,6 +105,7 @@ var Poivre = (function () {
          * @returns {Poivre}
          */
         set: function (key, value) {
+            value = value || "";
             return this.each(function () {
                 var element = this;
 
@@ -117,7 +115,11 @@ var Poivre = (function () {
                     });
                 }
 
-                element.setAttribute(key, value);
+                if (typeof element[key] !== 'undefined') {
+                    element[key] = value;
+                } else {
+                    element.setAttribute(key, value);
+                }
             });
         },
 
@@ -142,14 +144,16 @@ var Poivre = (function () {
          * @returns {Poivre}
          */
         find: function (selector, elements) {
-            var elements = elements || this, results = [];
+            var elements = elements || this,
+                results = [];
 
             if (!isArraylike(elements)) {
                 elements = [elements];
             }
 
             Poivre.each(elements, function () {
-                results.push.apply(results, slice.call(this.querySelectorAll(selector)));
+                var element = this.parentNode || this;
+                results.push.apply(results, slice.call(element.querySelectorAll(selector)));
             });
 
             return this.pushStack(results);
@@ -172,11 +176,11 @@ var Poivre = (function () {
 
         /**
          *
-         * @param elems
+         * @param elements
          * @returns {*}
          */
-        pushStack: function (elems) {
-            return Poivre.merge(Sel(), elems);
+        pushStack: function (elements) {
+            return Poivre.merge(Sel(), elements);
         },
 
 
@@ -223,6 +227,12 @@ var Poivre = (function () {
             }
         },
 
+        /**
+         * Prepend element(s) to current(s) one
+         *
+         * @param elements
+         * @returns {*}
+         */
         prepend: function (elements) {
             if (!isArraylike(elements)) {
                 elements = [elements];
@@ -235,6 +245,12 @@ var Poivre = (function () {
             });
         },
 
+        /**
+         * Append element(s) to current(s)
+         *
+         * @param elements
+         * @returns {*}
+         */
         append: function (elements) {
             if (!isArraylike(elements)) {
                 elements = [elements];
@@ -331,47 +347,19 @@ var Poivre = (function () {
      * @returns {*}
      */
     Poivre.each = function (obj, callback, args) {
-        var value,
-            i = 0,
-            length = obj.length,
-            isArray = isArraylike(obj);
+        var length, i = 0;
 
-        if (args) {
-            if (isArray) {
-                for (; i < length; i++) {
-                    value = callback.apply(obj[i], args);
-
-                    if (value === false) {
-                        break;
-                    }
-                }
-            } else {
-                for (i in obj) {
-                    value = callback.apply(obj[i], args);
-
-                    if (value === false) {
-                        break;
-                    }
+        if ( isArrayLike( obj ) ) {
+            length = obj.length;
+            for ( ; i < length; i++ ) {
+                if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
+                    break;
                 }
             }
-
-            // A special, fast, case for the most common use of each
         } else {
-            if (isArray) {
-                for (; i < length; i++) {
-                    value = callback.call(obj[i], i, obj[i]);
-
-                    if (value === false) {
-                        break;
-                    }
-                }
-            } else {
-                for (i in obj) {
-                    value = callback.call(obj[i], i, obj[i]);
-
-                    if (value === false) {
-                        break;
-                    }
+            for ( i in obj ) {
+                if ( callback.call( obj[ i ], i, obj[ i ] ) === false ) {
+                    break;
                 }
             }
         }
@@ -408,6 +396,6 @@ var Poivre = (function () {
  * @param selector
  * @constructor
  */
-var Sel = function (selector) {
-    return new Poivre(selector);
+var Sel = function (selector, context) {
+    return new Poivre(selector, context);
 };
