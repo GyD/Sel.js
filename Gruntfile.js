@@ -12,24 +12,24 @@ module.exports = function (grunt) {
                 }
             },
 
-            selIE9: {
-                files: {
-                    'dist/sel.ie9.min.js': [
-                        'src/sel.js',
-                        'src/sel.ie9.js'
-                    ]
-                }
-            },
+            // selIE9: {
+            //     files: {
+            //         'dist/sel.ie9.min.js': [
+            //             'src/sel.js',
+            //             'src/sel.ie9.js'
+            //         ]
+            //     }
+            // },
 
-            selIE8: {
-                files: {
-                    'dist/sel.ie8.min.js': [
-                        'src/sel.js',
-                        'src/sel.ie9.js',
-                        'src/sel.ie8.js'
-                    ]
-                }
-            }
+            // selIE8: {
+            //     files: {
+            //         'dist/sel.ie8.min.js': [
+            //             'src/sel.js',
+            //             'src/sel.ie9.js',
+            //             'src/sel.ie8.js'
+            //         ]
+            //     }
+            // }
         },
         watch: {
             scripts: {

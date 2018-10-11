@@ -292,16 +292,20 @@ var Poivre = (function () {
         options = options || {};
         // if method is not defined, use GET method
         var method = options.method || 'GET',
-        // async is enablde by default
-            async = options.async || true,
-        // data are null by default
+            // async is enable by default
+            async = options.async && true,
+            // data are null by default
             data = options.data || null,
 
-        // create the request
+            // create the request
             request = new XMLHttpRequest();
 
         // open the request
         request.open(method, url, async);
+
+        if( async && typeof options.responseType !== "undefined"){
+            request.responseType = options.responseType;
+        }
 
         // check request status after load
         request.onload = function () {
@@ -311,7 +315,7 @@ var Poivre = (function () {
 
             if (status >= 200 && status < 400) {
                 if (successCall) {
-                    successCall.call(request, request.responseText, status, this);
+                    successCall.call(request, request.response, status, this);
                 }
             }
 
